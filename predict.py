@@ -1,19 +1,3 @@
-"""预测脚本：加载训练好的三个单通道模型，对 DIV2K_valid_HR 中的图片逐通道预测并合成 RGB 彩色图。
-
-与 main.py 的训练流程保持一致：每张 RGB 图拆成 R/G/B 三个 (H, W, 1, 1) 张量，
-各自送入对应的 sub_pixel_convolution 得到相位图，再过 oversampling 得到衍射强度，
-中心裁剪回 (H, W) 后逐通道 min-max 归一化，最后合成 RGB 图片保存。
-
-运行方式（项目根目录下）：
-    python predict.py
-
-可选参数：
-    --data-dir      验证图片目录（默认 DIV2K_valid_HR）
-    --checkpoints   模型权重目录（默认 checkpoints，内含 model_ch{0,1,2}.pt）
-    --out-dir       合成图输出目录（默认 predictions，每张存为 <原名>_pred.png）
-    --size          预测边长（正方形，需能被 64 整除；默认 1024）
-    --device        计算设备（默认自动：有 CUDA 用 cuda，否则 cpu）
-"""
 
 import argparse
 from pathlib import Path
@@ -49,7 +33,7 @@ def _center_crop(x, out_h, out_w):
 
 
 def load_models(checkpoint_dir, device):
-    """加载三个单通道模型（置为 eval）与共享的 oversampling。"""
+    """加载三个单通道模型与共享的 oversampling。"""
     checkpoint_dir = Path(checkpoint_dir)
     models = []
     for c in range(3):
@@ -104,7 +88,7 @@ def main():
 
     H = W = args.size
     for p in paths:
-        x = _resize(_read_image(p), H, W, device)          # (H, W, 3, 1)
+        x = _resize(_read_image(p), H, W, device)
         img = predict_rgb(x, models, oversample, H, W)
         img.save(out_dir / f'{p.stem}_pred.png')
 
