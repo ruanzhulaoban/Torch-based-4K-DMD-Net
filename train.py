@@ -87,7 +87,7 @@ def train(data_dir=TRAIN_DATA_DIR, H=256, W=256, batch_size=2, epochs=2, lr=1e-3
           save_dir='checkpoints', euclidean_weight=0.0):
     """完整训练流程：读取 DIV2K 图片 -> 拆分 RGB 三通道 -> 独立训练三个单通道模型。"""
 
-        data_dir = Path(data_dir)
+    data_dir = Path(data_dir)
     paths = sorted(data_dir.glob('*.png'))
     if not paths:
         raise FileNotFoundError(f'在 {data_dir} 下未找到 .png 图片')
